@@ -17,9 +17,20 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ["web", "mobile", "network"],
+    lowercase: true,
+    //uppercase: true,
+    trim: true
   },
   author: String,
-  tags: [String],
+  tags: {
+    type: Array,
+    validate: {
+      validator: function (v) {
+        return v && v.length > 0;
+      },
+      message: "A course should have atleast one tag!",
+    },
+  },
   date: { type: Date, default: Date.now },
   isPublished: Boolean,
   price: {
@@ -29,18 +40,23 @@ const courseSchema = new mongoose.Schema({
     },
     min: 10,
     max: 220,
+    get: v => Math.round(v),
+    set: v => Math.round(v)
   },
 });
-//
+
+
+//form
+
 const Course = mongoose.model("Course", courseSchema);
 async function createCourse() {
   const course = new Course({
-    name: "mongod course",
-    category: "-",
+    name: "Sass course",
+    category: "web",
     author: "Jefe",
-    tags: ["node", "backend"],
+    tags: ['backend'],
     isPublished: true,
-    price: 15,
+    price: 15.8,
   });
 
   try {
